@@ -15,6 +15,12 @@ const int Led2 = 10;
 bool bkey1 = true;
 bool bkey2 = true;
 
+bool ledFade = true;
+bool ledFadeUP = true;
+int fadeDelay = 10;
+int fadeIndex = 0;
+unsigned long previousMillis = 0;
+
 int currentProfile = 0;
 
 void setup() {
@@ -27,9 +33,38 @@ void setup() {
   pinMode(Led1, OUTPUT);
   pinMode(Led2, OUTPUT);
   Keyboard.begin();
+  previousMillis = 0;
 }
 void loop() {
+  if(ledFade)   
+    {
+      if(millis() - previousMillis > fadeDelay){
+        previousMillis = millis(); 
+        if(ledFadeUP){
+        if(fadeIndex<255 && ledFadeUP){
+          analogWrite(Led1, fadeIndex);
+          analogWrite(Led2, fadeIndex);
+          fadeIndex++;
+        }
+        else{
+          ledFadeUP=false;
+        }
+        }
+        else{
+        if(fadeIndex>1){
+          analogWrite(Led1, fadeIndex);
+          analogWrite(Led2, fadeIndex);
+          fadeIndex--;
+        }
+        else{
+          ledFadeUP=true;
+        }
+        }
+      }
+    }
+  
   if(digitalRead(profilesKey)==LOW){
+    ledFade = false;
     digitalWrite(Led1, LOW);
     digitalWrite(Led2, LOW);
     if(currentProfile+1>2){
